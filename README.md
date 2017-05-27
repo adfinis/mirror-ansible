@@ -51,4 +51,8 @@ location /opensuse {
     alias /var/www/mirror/opensuse;
     autoindex on;
 }
+
+## License
+
+GNU GENERAL PUBLIC LICENSE Version 3
 ```
