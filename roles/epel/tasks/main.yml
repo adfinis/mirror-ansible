@@ -1,0 +1,36 @@
+---
+- name: create epel mirror base path
+  file: path="{{ epel_mirror_base_path }}" owner="{{ epel_mirror_user }}"
+    group="{{ epel_mirror_group }}" mode=0755 state=directory
+
+- name: create epel mirror log path
+  file: path="{{ epel_mirror_log_path }}" owner="{{ epel_mirror_user }}"
+    group="{{ epel_mirror_group }}" mode=0755 state=directory
+
+- name: template epel mirror sync script
+  template: src=sync_epel_mirror.j2
+    dest="{{ epel_mirror_script_path }}/{{ epel_mirror_script_name }}"
+    mode=0755
+
+- name: template epel mirror report config
+  template: src=report_epel_mirror.conf.j2
+    dest="{{ epel_mirror_report_config }}" mode=644
+
+- name: copy mirror report script
+  copy: src=report_mirror dest="{{ epel_mirror_report_script }}"
+    mode=755
+
+- name: template epel mirror logrotate config
+  template: src=epel_logrotate.j2 dest=/etc/logrotate.d/epel
+
+- name: add epel mirror cronjob
+  cron: name=sync_epel_mirror
+    cron_file=sync_epel_mirror
+    user="{{ epel_mirror_user }}"
+    month="{{ epel_mirror_cron_month }}"
+    weekday="{{ epel_mirror_cron_weekday }}"
+    day="{{ epel_mirror_cron_day }}"
+    hour="{{ epel_mirror_cron_hour }}"
+    minute="{{ epel_mirror_cron_minute }}"
+    job="{{ epel_mirror_script_path }}/{{ epel_mirror_script_name }} > /dev/null 2>&1"
+    state=present

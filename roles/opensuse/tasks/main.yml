@@ -1,0 +1,47 @@
+---
+- name: create opensuse  mirror group
+  group: name="{{ opensuse_mirror_group }}" gid="{{ opensuse_mirror_group_id }}" state=present
+
+- name: "Create opensuse mirror user"
+  user: name="{{ opensuse_mirror_user }}" group="{{ opensuse_mirror_group }}" createhome=no
+    shell=/usr/sbin/nologin uid="{{ opensuse_mirror_user_id }}" state=present
+
+- name: create opensuse mirror base path
+  file: path="{{ opensuse_mirror_base_path }}" owner="{{ opensuse_mirror_user }}"
+    group="{{ opensuse_mirror_group }}" mode=0755 state=directory
+
+- name: create opensuse mirror tmp path
+  file: path="{{ opensuse_mirror_script_tmppath }}" owner="{{ opensuse_mirror_user }}"
+    group="{{ opensuse_mirror_group }}" mode=0755 state=directory
+
+- name: create opensuse mirror log path
+  file: path="{{ opensuse_mirror_log_path }}" owner="{{ opensuse_mirror_user }}"
+    group="{{ opensuse_mirror_group }}" mode=0755 state=directory
+
+- stat: path="{{ mirror_base_path }}/opensuse.json"
+  register: syncstatfile
+
+- name: create opensuse mirror sync stat file
+  copy: dest="{{ mirror_base_path }}/opensuse.json"
+    owner="{{ opensuse_mirror_user }}" group="{{ opensuse_mirror_group }}"
+    mode=0644 content=""
+  when: not syncstatfile.stat.exists
+
+- name: template opensuse mirror sync script
+  template: src=sync_opensuse_mirror.sh.j2
+    dest="{{ opensuse_mirror_script_path }}/{{ opensuse_mirror_script_name }}"
+    mode=0755
+
+- name: template opensuse mirror logrotate config
+  template: src=opensuse_logrotate.j2 dest=/etc/logrotate.d/opensuse
+
+- name: add opensuse mirror cronjob
+  cron: name=sync_opensuse_mirror cron_file=sync_opensuse_mirror
+    user="{{ opensuse_mirror_user }}"
+    month="{{ opensuse_mirror_cron_month }}"
+    weekday="{{ opensuse_mirror_cron_weekday }}"
+    day="{{ opensuse_mirror_cron_day }}"
+    hour="{{ opensuse_mirror_cron_hour }}"
+    minute="{{ opensuse_mirror_cron_minute }}"
+    job="{{ opensuse_mirror_script_path }}/{{ opensuse_mirror_script_name }} >/dev/null 2>&1"
+    state=present

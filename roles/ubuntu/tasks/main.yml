@@ -1,0 +1,27 @@
+---
+- name: create ubuntu mirror base path
+  file: path="{{ ubuntu_mirror_base_path }}" owner="{{ ubuntu_mirror_user }}"
+    group="{{ ubuntu_mirror_group }}" mode=0755 state=directory
+
+- name: create ubuntu mirror log path
+  file: path="{{ ubuntu_mirror_log_path }}" owner="{{ ubuntu_mirror_user }}"
+    group="{{ ubuntu_mirror_group }}" mode=0755 state=directory
+
+- name: template ubuntu mirror sync script
+  template: src=sync_ubuntu_mirror.sh.j2
+    dest="{{ ubuntu_mirror_script_path }}/{{ ubuntu_mirror_script_name }}"
+      mode=0755
+
+- name: template ubuntu mirror logrotate config
+  template: src=ubuntu_logrotate.j2 dest=/etc/logrotate.d/ubuntu
+
+- name: add ubuntu mirror cronjob
+  cron: name=sync_ubuntu_mirror cron_file=sync_ubuntu_mirror
+    user="{{ ubuntu_mirror_user }}"
+    month="{{ ubuntu_mirror_cron_month }}"
+    weekday="{{ ubuntu_mirror_cron_weekday }}"
+    day="{{ ubuntu_mirror_cron_day }}"
+    hour="{{ ubuntu_mirror_cron_hour }}"
+    minute="{{ ubuntu_mirror_cron_minute }}"
+    job="{{ ubuntu_mirror_script_path }}/{{ ubuntu_mirror_script_name }} >/dev/null 2>&1"
+    state=present

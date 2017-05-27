@@ -1,0 +1,19 @@
+---
+debian_security_mirror_base_path: /var/www/mirror/debian-security
+debian_security_mirror_log_path: /var/log/mirror/debian-security
+debian_security_mirror_user: mirror
+debian_security_mirror_group: mirror
+
+debian_security_mirror_script_name: sync_debian_security_mirror.sh
+debian_security_mirror_script_path: /usr/local/bin
+debian_security_mirror_script_source: "security.debian.org::debian-security"
+debian_security_mirror_script_bwlimit: 6000
+debian_security_mirror_script_log: sync_debian_security_mirror.log
+debian_security_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+debian_security_mirror_script_tmppath: /var/www/mirror/tmp
+
+debian_security_mirror_cron_month: "*"
+debian_security_mirror_cron_weekday: "*"
+debian_security_mirror_cron_day: "*"
+debian_security_mirror_cron_hour: "*/4"
+debian_security_mirror_cron_minute: "28"

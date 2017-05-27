@@ -1,0 +1,21 @@
+---
+opensuse_mirror_base_path: /var/www/mirror/opensuse
+opensuse_mirror_log_path: /var/log/mirror/opensuse
+opensuse_mirror_user: mirror-opensuse
+opensuse_mirror_user_id: 5001
+opensuse_mirror_group: mirror-opensuse
+opensuse_mirror_group_id: 5001
+
+opensuse_mirror_script_name: sync_opensuse_mirror.sh
+opensuse_mirror_script_path: /usr/local/bin
+opensuse_mirror_script_source: "stage.opensuse.org::opensuse-hotstuff-160gb"
+opensuse_mirror_script_bwlimit: 6000
+opensuse_mirror_script_log: sync_opensuse_mirror.log
+opensuse_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+opensuse_mirror_script_tmppath: /var/www/mirror/tmp-opensuse
+
+opensuse_mirror_cron_month: "*"
+opensuse_mirror_cron_weekday: "*"
+opensuse_mirror_cron_day: "*"
+opensuse_mirror_cron_hour: "*/4"
+opensuse_mirror_cron_minute: "22"

@@ -1,0 +1,27 @@
+---
+- name: create archlinux mirror base path
+  file: path="{{ archlinux_mirror_base_path }}" owner="{{ archlinux_mirror_user }}"
+    group="{{ archlinux_mirror_group }}" mode=0755 state=directory
+
+- name: create archlinux mirror log path
+  file: path="{{ archlinux_mirror_log_path }}" owner="{{ archlinux_mirror_user }}"
+    group="{{ archlinux_mirror_group }}" mode=0755 state=directory
+
+- name: template archlinux mirror sync script
+  template: src=sync_archlinux_mirror.sh.j2
+    dest="{{ archlinux_mirror_script_path }}/{{ archlinux_mirror_script_name }}"
+      mode=0755
+
+- name: template archlinux mirror logrotate config
+  template: src=archlinux_logrotate.j2 dest=/etc/logrotate.d/archlinux
+
+- name: add archlinux mirror cronjob
+  cron: name=sync_archlinux_mirror cron_file=sync_archlinux_mirror
+    user="{{ archlinux_mirror_user }}"
+    month="{{ archlinux_mirror_cron_month }}"
+    weekday="{{ archlinux_mirror_cron_weekday }}"
+    day="{{ archlinux_mirror_cron_day }}"
+    hour="{{ archlinux_mirror_cron_hour }}"
+    minute="{{ archlinux_mirror_cron_minute }}"
+    job="{{ archlinux_mirror_script_path }}/{{ archlinux_mirror_script_name }} >/dev/null 2>&1"
+    state=present

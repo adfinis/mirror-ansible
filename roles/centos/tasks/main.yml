@@ -1,0 +1,28 @@
+---
+- name: create centos mirror base path
+  file: path="{{ centos_mirror_base_path }}" owner="{{ centos_mirror_user }}"
+    group="{{ centos_mirror_group }}" mode=0755 state=directory
+
+- name: create centos mirror log path
+  file: path="{{ centos_mirror_log_path }}" owner="{{ centos_mirror_user }}"
+    group="{{ centos_mirror_group }}" mode=0755 state=directory
+
+- name: template centos mirror sync script
+  template: src=sync_centos_mirror.j2 
+    dest="{{ centos_mirror_script_path }}/{{ centos_mirror_script_name }}"
+    mode=0755
+
+- name: template centos mirror logrotate config
+  template: src=centos_logrotate.j2 dest=/etc/logrotate.d/centos
+
+- name: add centos mirror cronjob
+  cron: name=sync_centos_mirror
+    cron_file=sync_centos_mirror
+    user="{{ centos_mirror_user }}"
+    month="{{ centos_mirror_cron_month }}"
+    weekday="{{ centos_mirror_cron_weekday }}"
+    day="{{ centos_mirror_cron_day }}"
+    hour="{{ centos_mirror_cron_hour }}"
+    minute="{{ centos_mirror_cron_minute }}"
+    job="{{ centos_mirror_script_path }}/{{ centos_mirror_script_name }} > /dev/null 2>&1"
+    state=present

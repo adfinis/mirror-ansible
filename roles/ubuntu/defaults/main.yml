@@ -1,0 +1,23 @@
+---
+ubuntu_mirror_base_path: /var/www/mirror/ubuntu
+ubuntu_mirror_log_path: /var/log/mirror/ubuntu
+ubuntu_mirror_user: mirror
+ubuntu_mirror_group: mirror
+
+ubuntu_mirror_script_name: sync_ubuntu_mirror.sh
+ubuntu_mirror_script_path: /usr/local/bin
+ubuntu_mirror_script_source: "rsync://ch.rsync.archive.ubuntu.com/ubuntu"
+ubuntu_mirror_script_lastupdate_url: "http://ftp.uni-erlangen.de/pub/mirrors/ubuntu/project/trace/atemoya.canonical.com"
+ubuntu_mirror_script_bwlimit: 6000
+ubuntu_mirror_script_log: sync_ubuntu_mirror.log
+ubuntu_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+ubuntu_mirror_script_tmppath: /var/www/mirror/tmp
+ubuntu_mirror_script_lock_file: /tmp/sync_ubuntu_mirror.lck
+
+ubuntu_mirror_config_path: /etc
+
+ubuntu_mirror_cron_month: "*"
+ubuntu_mirror_cron_weekday: "*"
+ubuntu_mirror_cron_day: "*"
+ubuntu_mirror_cron_hour: "*/4"
+ubuntu_mirror_cron_minute: "08"

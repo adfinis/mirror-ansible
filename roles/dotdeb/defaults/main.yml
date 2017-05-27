@@ -1,0 +1,19 @@
+---
+dotdeb_mirror_base_path: /var/www/mirror/dotdeb
+dotdeb_mirror_log_path: /var/log/mirror/dotdeb
+dotdeb_mirror_user: mirror
+dotdeb_mirror_group: mirror
+
+dotdeb_mirror_script_name: sync_dotdeb_mirror.sh
+dotdeb_mirror_script_path: /usr/local/bin
+dotdeb_mirror_script_source: "packages.dotdeb.org::packages"
+dotdeb_mirror_script_bwlimit: 6000
+dotdeb_mirror_script_log: sync_dotdeb_mirror.log
+dotdeb_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+dotdeb_mirror_script_tmppath: /var/www/mirror/tmp
+
+dotdeb_mirror_cron_month: "*"
+dotdeb_mirror_cron_weekday: "*"
+dotdeb_mirror_cron_day: "*"
+dotdeb_mirror_cron_hour: "*/4"
+dotdeb_mirror_cron_minute: "48"

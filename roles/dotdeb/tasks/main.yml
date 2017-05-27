@@ -1,0 +1,28 @@
+---
+- name: create dotdeb mirror base path
+  file: path="{{ dotdeb_mirror_base_path }}" owner="{{ dotdeb_mirror_user }}"
+    group="{{ dotdeb_mirror_group }}" mode=0755 state=directory
+
+- name: create dotdeb mirror log path
+  file: path="{{ dotdeb_mirror_log_path }}" owner="{{ dotdeb_mirror_user }}"
+    group="{{ dotdeb_mirror_group }}" mode=0755 state=directory
+
+- name: template dotdeb mirror sync script
+  template: src=sync_dotdeb_mirror.j2
+    dest="{{ dotdeb_mirror_script_path }}/{{ dotdeb_mirror_script_name }}"
+    mode=0755
+
+- name: template dotdeb mirror logrotate config
+  template: src=dotdeb_logrotate.j2 dest=/etc/logrotate.d/dotdeb
+
+- name: add dotdeb mirror cronjob
+  cron: name=sync_dotdeb_mirror
+    cron_file=sync_dotdeb_mirror
+    user="{{ dotdeb_mirror_user }}"
+    month="{{ dotdeb_mirror_cron_month }}"
+    weekday="{{ dotdeb_mirror_cron_weekday }}"
+    day="{{ dotdeb_mirror_cron_day }}"
+    hour="{{ dotdeb_mirror_cron_hour }}"
+    minute="{{ dotdeb_mirror_cron_minute }}"
+    job="{{ dotdeb_mirror_script_path }}/{{ dotdeb_mirror_script_name }} > /dev/null 2>&1"
+    state=present

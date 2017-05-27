@@ -1,0 +1,65 @@
+---
+- name: install required packages
+  apt: name={{ item }} update_cache=yes state=installed
+  with_items:
+    - rsync
+    - nginx
+    - logrotate
+    - git
+
+- name: remove nginx default vhost
+  file: path=/etc/nginx/sites-enabled/default state=absent
+  notify:
+    - reload nginx
+
+- name: create nginx configuration
+  copy: src=nginx.conf dest=/etc/nginx/nginx.conf backup=yes
+  notify:
+    - reload nginx
+
+- name: create nginx bad_bot blacklist.conf
+  copy: src=blacklist.conf dest=/etc/nginx/conf.d/blacklist.conf
+  notify:
+    - reload nginx
+
+- name: create nginx ssl_params configuration
+  template: src=ssl_params.j2 dest=/etc/nginx/ssl_params
+  notify:
+    - reload nginx
+
+- name: template nginx mirror vhost
+  template: src=nginx_mirror_vhost.conf.j2 dest=/etc/nginx/conf.d/mirror.conf
+    force=no
+  notify:
+    - reload nginx
+
+- name: template nginx mirror locations
+  template: src=mirror-locations.j2 dest=/etc/nginx/conf.d/mirror-locations
+    force=no
+  notify:
+    - reload nginx
+
+- name: create new dhparams for nginx
+  command: sudo openssl dhparam -out {{ nginx_mirror_dhparams }} 2048
+    creates={{ nginx_mirror_dhparams }}
+
+- name: create mirror group
+  group: name="{{ mirror_group }}" gid="{{ mirror_group_id }}" state=present
+
+- name: create mirror user
+  user: name="{{ mirror_user }}" group="{{ mirror_group }}" createhome=no
+    shell=/usr/sbin/nologin uid="{{ mirror_user_id }}" state=present
+
+- name: create mirror base path
+  file: path="{{ mirror_base_path }}" state=directory
+
+- name: create mirror temp path
+  file: path="{{ mirror_temp_path }}" owner="{{ mirror_user }}"
+    group="{{ mirror_group }}" state=directory
+
+- name: create mirror log path
+  file: path="{{ mirror_log_path }}" state=directory
+
+- name: create robots.txt in document root
+  copy: src=robots.txt dest={{ nginx_mirror_docroot }}/robots.txt
+    owner="{{ mirror_user }}" group="{{ mirror_group }}"

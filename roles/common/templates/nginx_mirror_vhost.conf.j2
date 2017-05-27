@@ -1,0 +1,37 @@
+server {
+    listen      [::]:80 default_server;
+    server_name pkg.adfinis-sygroup.ch pkg.ad-sy.ch;
+
+    access_log  /var/log/nginx/pkg.ad-sy.ch_access.log;
+    error_log   /var/log/nginx/pkg.ad-sy.ch_error.log;
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/www;
+    }
+
+    if ($bad_bot) { return 403; }
+
+    include {{ nginx_mirror_locations }};
+}
+
+server {
+    listen [::]:443 ssl default_server;
+    server_name pkg.adfinis-sygroup.ch pkg.ad-sy.ch;
+
+    access_log /var/log/nginx/ssl_pkg.ad-sy.ch_access.log;
+    error_log  /var/log/nginx/ssl_pkg.ad-sy.ch_error.log;
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/www;
+    }
+
+    ssl_certificate     /etc/ssl/private/pkg.adfinis-sygroup.ch.combined.crt;
+    ssl_certificate_key /etc/ssl/private/pkg.adfinis-sygroup.ch.key;
+    include ssl_params;
+
+    if ($bad_bot) { return 403; }
+
+    include {{ nginx_mirror_locations }};
+}

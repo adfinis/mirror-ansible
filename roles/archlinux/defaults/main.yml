@@ -1,0 +1,19 @@
+---
+archlinux_mirror_base_path: /var/www/mirror/archlinux
+archlinux_mirror_log_path: /var/log/mirror/archlinux
+archlinux_mirror_user: mirror
+archlinux_mirror_group: mirror
+
+archlinux_mirror_script_name: sync_archlinux_mirror.sh
+archlinux_mirror_script_path: /usr/local/bin
+archlinux_mirror_script_source: "rsync://rsync.archlinux.org/ftp_tier1"
+archlinux_mirror_script_bwlimit: 6000
+archlinux_mirror_script_log: sync_archlinux_mirror.log
+archlinux_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+archlinux_mirror_script_tmppath: /var/www/mirror/tmp
+
+archlinux_mirror_cron_month: "*"
+archlinux_mirror_cron_weekday: "*"
+archlinux_mirror_cron_day: "*"
+archlinux_mirror_cron_hour: "*"
+archlinux_mirror_cron_minute: "7,22,37,52"

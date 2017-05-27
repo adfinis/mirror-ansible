@@ -1,0 +1,10 @@
+goaccess_html_header: "GoAccess Statistics"
+goaccess_statistics_file: /var/www/stat/index.html
+
+goaccess_database_path: /var/lib/goaccess/
+
+goaccess_cron_month: "*"
+goaccess_cron_weekday: "*"
+goaccess_cron_day: "*"
+goaccess_cron_hour: "*/1"
+goaccess_cron_minute: "0"

@@ -1,0 +1,23 @@
+---
+- name: create goaccess database path
+  file: path="{{ goaccess_database_path }}" owner="{{ mirror_user }}"
+    group="{{ mirror_group }}" mode=0755 state=directory
+
+- name: copy goaccess deb to remote
+  copy: src=goaccess_0.9.6-1_amd64.deb dest=/tmp
+
+- name: install goaccess from deb
+  command: dpkg -i /tmp/goaccess_0.9.6-1_amd64.deb creates=/etc/goaccess.conf
+
+- name: template goaccess.conf to remote
+  template: src=goaccess.conf.j2 dest=/etc/goaccess.conf
+
+- name: create cronjob for goaccess
+  cron: name=goaccess-statistics cron_file=goaccess-statistics
+    user="www-data"
+    month="{{ goaccess_cron_month }}"
+    weekday="{{ goaccess_cron_weekday }}"
+    day="{{ goaccess_cron_day }}"
+    hour="{{ goaccess_cron_hour }}"
+    minute="{{ goaccess_cron_minute }}"
+    job="zcat -f /var/log/nginx/*pkg.ad-sy.ch_access* | goaccess > {{ goaccess_statistics_file }}"

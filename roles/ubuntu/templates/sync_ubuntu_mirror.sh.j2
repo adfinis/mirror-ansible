@@ -1,0 +1,92 @@
+#!/bin/bash
+# usage:    This script is used to mirror a Ubuntu package repository.
+#
+# last edit: {{ template_run_date }} ansible
+
+# uncomment to enable bash debugging
+#set -x
+
+log="{{ ubuntu_mirror_log_path }}/{{ ubuntu_mirror_script_log }}"
+timeformat="{{ ubuntu_mirror_script_log_timeformat }}"
+source="{{ ubuntu_mirror_script_source }}"
+target="{{ ubuntu_mirror_base_path }}"
+lastupdate_url="{{ ubuntu_mirror_script_lastupdate_url }}"
+bwlimit="{{ ubuntu_mirror_script_bwlimit }}"
+tmppath="{{ ubuntu_mirror_script_tmppath }}"
+statsfile="{{ mirror_base_path }}/ubuntu.json"
+
+lock="{{ ubuntu_mirror_script_lock_file }}"
+rsyncexitcode="-1"
+
+function writestatistics() {
+    local syncsize="$(du -h "${target}" | tail -1 | cut -f1)"
+    local synctime="$(date "${timeformat}")"
+
+    echo "{" > "${statsfile}"
+    echo "\"size\": \"${syncsize}\"," >> "${statsfile}"
+    echo "\"time\": \"${synctime}\"," >> "${statsfile}"
+    echo "\"status\": \"${rsyncexitcode}\""  >> "${statsfile}"
+    echo "}" >> "${statsfile}"
+}
+
+function log-message() {
+    # usage: log <quit> <"message"> [exitcode]
+    # example: log-message 1 "Mirror is already up to date!" 0
+
+    local quit="$1"
+    local message="$2"
+
+    echo "[$(date "${timeformat}")] ${message}" >> "${log}"
+    echo "---------------------------------------------------------------" >> "${log}"
+
+    if [ "${quit}" = 1 ]; then
+        local exitcode="$3"
+        writestatistics
+        exit ${exitcode}
+    fi
+}
+
+# create lock or exit if already locked in order to prevent multiple syncs
+exec 9>"${lock}"
+flock -n 9 || log-message 1 "Ubuntu mirror rsync job is already running!" 1
+
+# exit if there weren't any changes
+if diff -b <(curl -s "${lastupdate_url}") "${target}/project/trace/$(hostname -f)" >/dev/null; then
+    log-message 1 "Mirror is already up to date!" 0
+fi
+
+# start to rsync the mirror (stage 1)
+log-message 0 "Started stage 1 of ubuntu mirror rsync job."
+rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
+    --hard-links --links --safe-links --times \
+    --delay-updates --temp-dir="${tmppath}" \
+    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    --exclude "Packages*" --exclude "Sources*" \
+    --exclude "Release*" \
+    "${source}" \
+    "${target}"
+rsyncexitcode="$?"
+
+if [ "${rsyncexitcode}" = "0" ]; then
+    log-message 0 "First stage of rsync done successfully."
+else
+    log-message 1 "rsync had an error while running the first stage." ${rsyncexitcode}
+fi
+
+# start to rsync the mirror (stage 2)
+log-message 0 "Started stage 2 of ubuntu mirror rsync job."
+rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
+    --hard-links --links --safe-links --times \
+    --delete-after --temp-dir="${tmppath}" \
+    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    "${source}" \
+    "${target}"
+rsyncexitcode="$?"
+
+if [ "${rsyncexitcode}" = "0" ]; then
+    log-message 0 "Second stage of rsync done successfully."
+    date -u > ${target}/project/trace/$(hostname -f)
+    log-message 1 "Finished Ubuntu mirror rsync job." ${rsyncexitcode} # -> exit 0
+else
+    log-message 1 "First stage of rsync done successfully." ${rsyncexitcode}
+fi

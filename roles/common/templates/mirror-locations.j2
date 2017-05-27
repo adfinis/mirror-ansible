@@ -1,0 +1,13 @@
+location / {
+    root {{ nginx_mirror_docroot }};
+}
+
+location /stat {
+    alias /var/www/stat;
+    allow 127.0.0.1;
+    allow ::1;
+    allow 95.128.32.0/24;
+    allow 95.128.36.166;
+    allow 2001:618:1:105::0/64;
+    deny all;
+}

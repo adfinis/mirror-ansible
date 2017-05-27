@@ -1,0 +1,23 @@
+---
+epel_mirror_base_path: /var/www/mirror/epel
+epel_mirror_log_path: /var/log/mirror/epel
+epel_mirror_user: mirror
+epel_mirror_group: mirror
+
+epel_mirror_script_name: sync_epel_mirror.sh
+epel_mirror_script_path: /usr/local/bin
+epel_mirror_script_source: "rsync://dl.fedoraproject.org/fedora-epel"
+epel_mirror_script_lastupdate_url: ""
+epel_mirror_script_bwlimit: 6000
+epel_mirror_script_log: sync_epel_mirror.log
+epel_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+epel_mirror_script_tmppath: /var/www/mirror/tmp
+
+epel_mirror_report_script: /usr/local/bin/report_mirror
+epel_mirror_report_config: /etc/mirror/report_epel_mirror.conf
+
+epel_mirror_cron_month: "*"
+epel_mirror_cron_weekday: "*"
+epel_mirror_cron_day: "*"
+epel_mirror_cron_hour: "*/4"
+epel_mirror_cron_minute: "18"

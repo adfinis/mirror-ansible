@@ -1,0 +1,28 @@
+---
+- name: create debian_security mirror base path
+  file: path="{{ debian_security_mirror_base_path }}" owner="{{ debian_security_mirror_user }}"
+    group="{{ debian_security_mirror_group }}" mode=0755 state=directory
+
+- name: create debian_security mirror log path
+  file: path="{{ debian_security_mirror_log_path }}" owner="{{ debian_security_mirror_user }}"
+    group="{{ debian_security_mirror_group }}" mode=0755 state=directory
+
+- name: template debian_security mirror sync script
+  template: src=sync_debian_security_mirror.j2
+    dest="{{ debian_security_mirror_script_path }}/{{ debian_security_mirror_script_name }}"
+    mode=0755
+
+- name: template debian_security mirror logrotate config
+  template: src=debian_security_logrotate.j2 dest=/etc/logrotate.d/debian_security
+
+- name: add debian_security mirror cronjob
+  cron: name=sync_debian_security_mirror
+    cron_file=sync_debian_security_mirror
+    user="{{ debian_security_mirror_user }}"
+    month="{{ debian_security_mirror_cron_month }}"
+    weekday="{{ debian_security_mirror_cron_weekday }}"
+    day="{{ debian_security_mirror_cron_day }}"
+    hour="{{ debian_security_mirror_cron_hour }}"
+    minute="{{ debian_security_mirror_cron_minute }}"
+    job="{{ debian_security_mirror_script_path }}/{{ debian_security_mirror_script_name }} > /dev/null 2>&1"
+    state=present

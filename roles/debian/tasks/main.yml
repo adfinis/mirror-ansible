@@ -1,0 +1,26 @@
+---
+- name: create debian mirror base path
+  file: path="{{ debian_mirror_base_path }}" owner="{{ debian_mirror_user }}"
+    group="{{ debian_mirror_group }}" mode=0755 state=directory
+
+- name: create debian mirror log path
+  file: path="{{ debian_mirror_log_path }}" owner="{{ debian_mirror_user }}"
+    group="{{ debian_mirror_group }}" mode=0755 state=directory
+
+- name: template debian mirror sync script
+  template: src=sync_debian_mirror.sh.j2 mode=0755
+    dest="{{ debian_mirror_script_path }}/{{ debian_mirror_script_name }}"
+
+- name: template debian mirror logrotate config
+  template: src=debian_logrotate.j2 dest=/etc/logrotate.d/debian
+
+- name: add debian mirror cronjob
+  cron: name=sync_debian_mirror cron_file=sync_debian_mirror
+    user="{{ debian_mirror_user }}"
+    month="{{ debian_mirror_cron_month }}"
+    weekday="{{ debian_mirror_cron_weekday }}"
+    day="{{ debian_mirror_cron_day }}"
+    hour="{{ debian_mirror_cron_hour }}"
+    minute="{{ debian_mirror_cron_minute }}"
+    job="{{ debian_mirror_script_path }}/{{ debian_mirror_script_name }} >/dev/null 2>&1 >/dev/null 2>&1"
+    state=present

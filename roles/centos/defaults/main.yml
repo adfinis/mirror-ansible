@@ -1,0 +1,20 @@
+---
+centos_mirror_base_path: /var/www/mirror/centos
+centos_mirror_log_path: /var/log/mirror/centos
+centos_mirror_user: mirror
+centos_mirror_group: mirror
+
+centos_mirror_script_name: sync_centos_mirror.sh
+centos_mirror_script_path: /usr/local/bin
+centos_mirror_script_source: "rsync://linuxsoft.cern.ch/centos/"
+centos_mirror_script_lastupdate_url: "http://linuxsoft.cern.ch/centos/TIME"
+centos_mirror_script_bwlimit: 6000
+centos_mirror_script_log: sync_centos_mirror.log
+centos_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+centos_mirror_script_tmppath: /var/www/mirror/tmp
+
+centos_mirror_cron_month: "*"
+centos_mirror_cron_weekday: "*"
+centos_mirror_cron_day: "*"
+centos_mirror_cron_hour: "*/4"
+centos_mirror_cron_minute: "38"

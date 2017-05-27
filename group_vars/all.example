@@ -1,0 +1,7 @@
+---
+mirror_base_path: /var/www/mirror
+mirror_temp_path: /var/www/mirror/tmp
+
+epel_mirror_fedora_site_name: "<site_name>"
+epel_mirror_fedora_site_pass: "<site_password>"
+epel_mirror_fedora_site_mirror: "<site_domain>"

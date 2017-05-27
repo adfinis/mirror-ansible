@@ -1,0 +1,23 @@
+---
+debian_mirror_base_path: /var/www/mirror/debian
+debian_mirror_log_path: /var/log/mirror/debian
+debian_mirror_user: mirror
+debian_mirror_group: mirror
+
+debian_mirror_script_name: sync_debian_mirror.sh
+debian_mirror_script_path: /usr/local/bin
+debian_mirror_script_tmppath: /var/www/mirror/tmp
+debian_mirror_script_lock_file: /tmp/sync_debian_mirror.lck
+
+debian_mirror_name: pkg.adfinis-sygroup.ch
+debian_mirror_script_source: ftp.ch.debian.org
+debian_mirror_script_bwlimit: 6000
+debian_mirror_script_log: sync_debian_mirror.log
+debian_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+debian_mirror_script_archexclude: "alpha arm arm64 armel armhf hppa hurd-i386 ia64 kfreebsd-amd64 kfreebsd-i386 m68k mipsel mips64el mips powerpc ppc64el s390 s390x sh sparc"
+
+debian_mirror_cron_month: "*"
+debian_mirror_cron_weekday: "*"
+debian_mirror_cron_day: "*"
+debian_mirror_cron_hour: "*/4"
+debian_mirror_cron_minute: "58"

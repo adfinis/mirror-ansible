@@ -1,0 +1,68 @@
+#!/bin/bash
+# usage:     This script is used to mirror a epel package repository.
+#
+# {{ ansible_managed }}
+
+# uncomment to enable bash debugging
+#set -x
+
+log="{{ epel_mirror_log_path }}/{{ epel_mirror_script_log }}"
+timeformat="{{ epel_mirror_script_log_timeformat }}"
+source="{{ epel_mirror_script_source }}"
+target="{{ epel_mirror_base_path }}"
+bwlimit="{{ epel_mirror_script_bwlimit }}"
+tmppath="{{ epel_mirror_script_tmppath }}"
+statsfile="{{ mirror_base_path }}/epel.json"
+report_mirror_script="{{ epel_mirror_report_script }}"
+report_mirror_config="{{ epel_mirror_report_config }}"
+
+lock="/tmp/sync_epel_mirror.lck"
+rsyncexitcode="-1"
+
+function writestatistics() {
+    local syncsize="$(du -h "${target}" | tail -1 | cut -f1)"
+    local synctime="$(date "${timeformat}")"
+
+    echo "{" > "${statsfile}"
+    echo "\"size\": \"${syncsize}\"," >> "${statsfile}"
+    echo "\"time\": \"${synctime}\"," >> "${statsfile}"
+    echo "\"status\": \"${rsyncexitcode}\""  >> "${statsfile}"
+    echo "}" >> "${statsfile}"
+}
+
+function log-message() {
+    # usage: log <quit> <"message"> [exitcode]
+    # example: log-message 1 "Mirror is already up to date!" 0
+
+    local quit="$1"
+    local message="$2"
+
+    echo "[$(date "${timeformat}")] ${message}" >> "${log}"
+    echo "---------------------------------------------------------------" >> "${log}"
+
+    if [ "${quit}" = 1 ]; then
+        local exitcode="$3"
+        writestatistics
+        ${report_mirror_script} -c ${report_mirror_config} >> "${log}"
+        exit ${exitcode}
+    fi
+}
+
+# create lock or exit if already locked in order to prevent multiple syncs
+exec 9>"${lock}"
+flock -n 9 || log-message 1 "epel mirror rsync job is already running!" 1
+
+log-message 0 "Started epel mirror rsync job."
+rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
+    --hard-links --links --safe-links --times --numeric-ids \
+    --delete-after --delay-updates --temp-dir="${tmppath}" \
+    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    "${source}" \
+    "${target}"
+rsyncexitcode="$?"
+
+if [ "${rsyncexitcode}" = "0" ]; then
+    log-message 1 "Finished Arch Linux mirror rsync job." ${rsyncexitcode} # = 0
+else
+    log-message 1 "Rsync had an error: ${rsyncexitcode}" ${rsyncexitcode} # >= 1
+fi
