@@ -1,5 +1,5 @@
 server {
-    listen      [::]:80 default_server;
+    listen      80 default_server;
     server_name {{ nginx_vhostname }};
 
     access_log  /var/log/nginx/pkg.ad-sy.ch_access.log;
@@ -15,7 +15,7 @@ server {
 
 {% if nginx_https %}
 server {
-    listen [::]:443 ssl default_server;
+    listen 443 ssl default_server;
     server_name {{ nginx_vhostname }};
 
     access_log /var/log/nginx/ssl_{{ nginx_vhostname }}_access.log;
