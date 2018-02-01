@@ -61,5 +61,5 @@
   file: path="{{ mirror_log_path }}" state=directory
 
 - name: create robots.txt in document root
-  copy: src=robots.txt dest={{ nginx_mirror_docroot }}/robots.txt
+  copy: src=robots.txt dest={{ mirror_base_path }}/robots.txt
     owner="{{ mirror_user }}" group="{{ mirror_group }}"
