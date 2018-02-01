@@ -8,3 +8,5 @@ mirror_group_id: 5000
 nginx_mirror_locations: /etc/nginx/conf.d/mirror-locations
 nginx_mirror_dhparams: /etc/ssl/certs/dhparam.pem
 nginx_mirror_docroot: /var/www
+nginx_https: True
+nginx_vhostname: localhost

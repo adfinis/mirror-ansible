@@ -9,7 +9,7 @@ debian_mirror_script_path: /usr/local/bin
 debian_mirror_script_tmppath: /var/www/mirror/tmp
 debian_mirror_script_lock_file: /tmp/sync_debian_mirror.lck
 
-debian_mirror_name: pkg.adfinis-sygroup.ch
+debian_mirror_name: pkg.example.com
 debian_mirror_script_source: ftp.ch.debian.org
 debian_mirror_script_bwlimit: 6000
 debian_mirror_script_log: sync_debian_mirror.log

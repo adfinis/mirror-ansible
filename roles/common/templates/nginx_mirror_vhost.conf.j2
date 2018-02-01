@@ -1,6 +1,6 @@
 server {
     listen      [::]:80 default_server;
-    server_name pkg.adfinis-sygroup.ch pkg.ad-sy.ch;
+    server_name {{ nginx_vhostname }};
 
     access_log  /var/log/nginx/pkg.ad-sy.ch_access.log;
     error_log   /var/log/nginx/pkg.ad-sy.ch_error.log;
@@ -10,28 +10,26 @@ server {
         root /usr/share/nginx/www;
     }
 
-    if ($bad_bot) { return 403; }
-
     include {{ nginx_mirror_locations }};
 }
 
+{% if nginx_https %}
 server {
     listen [::]:443 ssl default_server;
-    server_name pkg.adfinis-sygroup.ch pkg.ad-sy.ch;
+    server_name {{ nginx_vhostname }};
 
-    access_log /var/log/nginx/ssl_pkg.ad-sy.ch_access.log;
-    error_log  /var/log/nginx/ssl_pkg.ad-sy.ch_error.log;
+    access_log /var/log/nginx/ssl_{{ nginx_vhostname }}_access.log;
+    error_log  /var/log/nginx/ssl_{{ nginx_vhostname }}_error.log;
 
     error_page 500 502 503 504 /50x.html;
     location = /50x.html {
         root /usr/share/nginx/www;
     }
 
-    ssl_certificate     /etc/ssl/private/pkg.adfinis-sygroup.ch.combined.crt;
-    ssl_certificate_key /etc/ssl/private/pkg.adfinis-sygroup.ch.key;
+    ssl_certificate     /etc/ssl/private/{{ nginx_vhostname }}.combined.crt;
+    ssl_certificate_key /etc/ssl/private/{{ nginx_vhostname }}.key;
     include ssl_params;
-
-    if ($bad_bot) { return 403; }
 
     include {{ nginx_mirror_locations }};
 }
+{% endif %}
