@@ -53,6 +53,10 @@
 - name: create mirror base path
   file: path="{{ mirror_base_path }}" state=directory
 
+
+- name: create mirror config path
+  file: path="/etc/mirror" state=directory
+
 - name: create mirror temp path
   file: path="{{ mirror_temp_path }}" owner="{{ mirror_user }}"
     group="{{ mirror_group }}" state=directory

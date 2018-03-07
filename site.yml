@@ -1,13 +1,12 @@
 ---
 # This Ansible playbook deploys a complete mirror setup including statistics
 - hosts: all
+  become: true
   roles:
     - common
-    - goaccess
-    - archlinux
     - centos
     - debian
-    - dotdeb
     - epel
     - ubuntu
     - debian-security
+    - opensuse
