@@ -1,5 +1,9 @@
 server {
     listen      [::]:80 ipv6only=off default_server;
+<<<<<<< HEAD
+=======
+#    server_name {{ nginx_vhostname }};
+>>>>>>> edfc34ab8512dc9896733746cd1a715d98917661
 
     access_log  /var/log/nginx/pkg.ad-sy.ch_access.log;
     error_log   /var/log/nginx/pkg.ad-sy.ch_error.log;
@@ -15,6 +19,10 @@ server {
 {% if nginx_https %}
 server {
     listen [::]:443 ipv6only=off ssl default_server;
+<<<<<<< HEAD
+=======
+#    server_name {{ nginx_vhostname }};
+>>>>>>> edfc34ab8512dc9896733746cd1a715d98917661
 
     access_log /var/log/nginx/ssl_{{ nginx_vhostname }}_access.log;
     error_log  /var/log/nginx/ssl_{{ nginx_vhostname }}_error.log;
