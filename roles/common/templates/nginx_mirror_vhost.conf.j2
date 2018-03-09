@@ -1,6 +1,5 @@
 server {
     listen      [::]:80 ipv6only=off default_server;
-    server_name {{ nginx_vhostname }};
 
     access_log  /var/log/nginx/pkg.ad-sy.ch_access.log;
     error_log   /var/log/nginx/pkg.ad-sy.ch_error.log;
@@ -16,7 +15,6 @@ server {
 {% if nginx_https %}
 server {
     listen [::]:443 ipv6only=off ssl default_server;
-    server_name {{ nginx_vhostname }};
 
     access_log /var/log/nginx/ssl_{{ nginx_vhostname }}_access.log;
     error_log  /var/log/nginx/ssl_{{ nginx_vhostname }}_error.log;
