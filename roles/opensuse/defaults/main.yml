@@ -8,7 +8,7 @@ opensuse_mirror_group_id: 5001
 
 opensuse_mirror_script_name: sync_opensuse_mirror.sh
 opensuse_mirror_script_path: /usr/local/bin
-opensuse_mirror_script_source: "stage.opensuse.org::opensuse-hotstuff-160gb"
+opensuse_mirror_script_source: "rsync.opensuse.org::opensuse-hotstuff-320gb"
 opensuse_mirror_script_bwlimit: 6000
 opensuse_mirror_script_log: sync_opensuse_mirror.log
 opensuse_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
