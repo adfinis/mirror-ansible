@@ -1,0 +1,27 @@
+---
+- name: create alpine mirror base path
+  file: path="{{ alpine_mirror_base_path }}" owner="{{ alpine_mirror_user }}"
+    group="{{ alpine_mirror_group }}" mode=0755 state=directory
+
+- name: create alpine mirror log path
+  file: path="{{ alpine_mirror_log_path }}" owner="{{ alpine_mirror_user }}"
+    group="{{ alpine_mirror_group }}" mode=0755 state=directory
+
+- name: template alpine mirror sync script
+  template: src=sync_alpine_mirror.sh.j2
+    dest="{{ alpine_mirror_script_path }}/{{ alpine_mirror_script_name }}"
+      mode=0755
+
+- name: template alpine mirror logrotate config
+  template: src=alpine_logrotate.j2 dest=/etc/logrotate.d/alpine
+
+- name: add alpine mirror cronjob
+  cron: name=sync_alpine_mirror cron_file=sync_alpine_mirror
+    user="{{ alpine_mirror_user }}"
+    month="{{ alpine_mirror_cron_month }}"
+    weekday="{{ alpine_mirror_cron_weekday }}"
+    day="{{ alpine_mirror_cron_day }}"
+    hour="{{ alpine_mirror_cron_hour }}"
+    minute="{{ alpine_mirror_cron_minute }}"
+    job="{{ alpine_mirror_script_path }}/{{ alpine_mirror_script_name }} >/dev/null 2>&1"
+    state=present

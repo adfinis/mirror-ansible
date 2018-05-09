@@ -4,6 +4,7 @@
   roles:
     - common
     - goaccess
+    - alpine
     - archlinux
     - centos
     - debian

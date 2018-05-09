@@ -1,0 +1,74 @@
+#!/bin/bash
+# usage:    This script is used to mirror an Alpine package repository.
+#
+# last edit: {{ template_run_date }} ansible
+
+# uncomment to enable bash debugging
+#set -x
+
+log="{{ alpine_mirror_log_path }}/{{ alpine_mirror_script_log }}"
+timeformat="{{ alpine_mirror_script_log_timeformat }}"
+source="{{ alpine_mirror_script_source }}"
+target="{{ alpine_mirror_base_path }}"
+bwlimit="{{ alpine_mirror_script_bwlimit }}"
+tmppath="{{ alpine_mirror_script_tmppath }}"
+statsfile="{{ mirror_base_path }}/alpine.json"
+
+lock="/tmp/sync_alpine_mirror.lck"
+lastupdate_tmp=$(mktemp)
+rsyncexitcode="-1"
+
+function writestatistics() {
+    local syncsize="$(du -h "${target}" | tail -1 | cut -f1)"
+    local synctime="$(date "${timeformat}")"
+
+    echo "{" > "${statsfile}"
+    echo "\"size\": \"${syncsize}\"," >> "${statsfile}"
+    echo "\"time\": \"${synctime}\"," >> "${statsfile}"
+    echo "\"status\": \"${rsyncexitcode}\""  >> "${statsfile}"
+    echo "}" >> "${statsfile}"
+}
+
+function log-message() {
+    # usage: log <quit> <"message"> [exitcode]
+    # example: log-message 1 "Mirror is already up to date!" 0
+
+    local quit="$1"
+    local message="$2"
+
+    echo "[$(date "${timeformat}")] ${message}" >> "${log}"
+    echo "---------------------------------------------------------------" >> "${log}"
+
+    if [ "${quit}" = 1 ]; then
+        local exitcode="$3"
+        writestatistics
+        rm ${lastupdate_tmp}
+        exit ${exitcode}
+    fi
+}
+
+# create lock or exit if already locked in order to prevent multiple syncs
+exec 9>"${lock}"
+flock -n 9 || log-message 1 "Alpine mirror rsync job is already running!" 1
+
+# exit if there weren't any changes
+rsync "${source}/last-updated" "${lastupdate_tmp}"
+if diff -b "${lastupdate_tmp}" "${target}/last-updated" >/dev/null; then
+    log-message 1 "Mirror is already up to date!" 0
+fi
+
+# start to rsync the mirror
+log-message 0 "Started Alpine mirror rsync job."
+rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
+    --hard-links --links --safe-links --times --update \
+    --delete-after --delay-updates --temp-dir="${tmppath}" \
+    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    "${source}" \
+    "${target}"
+rsyncexitcode="$?"
+
+if [ "${rsyncexitcode}" = "0" ]; then
+    log-message 1 "Finished Alpine mirror rsync job." ${rsyncexitcode} # = 0
+else
+    log-message 1 "Rsync had an error: ${rsyncexitcode}" ${rsyncexitcode} # >= 1
+fi
