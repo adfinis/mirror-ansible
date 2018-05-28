@@ -50,7 +50,7 @@ function log-message() {
 
 # create lock or exit if already locked in order to prevent multiple syncs
 exec 9>"${lock}"
-flock -n 9 || log-message 1 "epel mirror rsync job is already running!" 1
+flock -n 9 || log-message 1 "EPEL mirror rsync job is already running!" 1
 
 log-message 0 "Started epel mirror rsync job."
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
@@ -62,7 +62,7 @@ rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
 rsyncexitcode="$?"
 
 if [ "${rsyncexitcode}" = "0" ]; then
-    log-message 1 "Finished Arch Linux mirror rsync job." ${rsyncexitcode} # = 0
+    log-message 1 "Finished EPEL mirror rsync job." ${rsyncexitcode} # = 0
 else
     log-message 1 "Rsync had an error: ${rsyncexitcode}" ${rsyncexitcode} # >= 1
 fi
