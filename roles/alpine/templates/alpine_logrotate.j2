@@ -1,0 +1,7 @@
+{{ alpine_mirror_log_path }}/{{ alpine_mirror_script_log }} {
+  rotate 10
+  daily
+  compress
+  missingok
+  notifempty
+}

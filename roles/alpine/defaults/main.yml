@@ -1,0 +1,19 @@
+---
+alpine_mirror_base_path: /var/www/mirror/alpine
+alpine_mirror_log_path: /var/log/mirror/alpine
+alpine_mirror_user: mirror
+alpine_mirror_group: mirror
+
+alpine_mirror_script_name: sync_alpine_mirror.sh
+alpine_mirror_script_path: /usr/local/bin
+alpine_mirror_script_source: "rsync://rsync.alpinelinux.org/alpine/"
+alpine_mirror_script_bwlimit: 6000
+alpine_mirror_script_log: sync_alpine_mirror.log
+alpine_mirror_script_log_timeformat: "+%Y/%m/%d %T %Z"
+alpine_mirror_script_tmppath: /var/www/mirror/tmp
+
+alpine_mirror_cron_month: "*"
+alpine_mirror_cron_weekday: "*"
+alpine_mirror_cron_day: "*"
+alpine_mirror_cron_hour: "*"
+alpine_mirror_cron_minute: "9,25,39,55"
