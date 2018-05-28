@@ -63,6 +63,7 @@ rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
     --hard-links --links --safe-links --times --update \
     --delete-after --delay-updates --temp-dir="${tmppath}" \
     --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    --exclude v2.* \
     "${source}" \
     "${target}"
 rsyncexitcode="$?"
