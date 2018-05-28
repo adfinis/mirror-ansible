@@ -60,7 +60,7 @@ fi
 # start to rsync the mirror
 log-message 0 "Started Arch Linux mirror rsync job."
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
-    --hard-links --links --safe-links --times \
+    --hard-links --links --safe-links --times --perms \
     --delete-after --delay-updates --temp-dir="${tmppath}" \
     --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
     "${source}" \

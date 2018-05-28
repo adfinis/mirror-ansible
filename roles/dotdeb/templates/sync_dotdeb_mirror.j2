@@ -13,6 +13,7 @@ target="{{ dotdeb_mirror_base_path }}"
 bwlimit="{{ dotdeb_mirror_script_bwlimit }}"
 tmppath="{{ dotdeb_mirror_script_tmppath }}"
 statsfile="{{ mirror_base_path }}/dotdeb.json"
+remotegpgkey="https://www.dotdeb.org/dotdeb.gpg"
 
 lock="/tmp/sync_dotdeb_mirror.lck"
 rsyncexitcode="-1"
@@ -50,10 +51,14 @@ exec 9>"${lock}"
 flock -n 9 || log-message 1 "dotdeb mirror rsync job is already running!" 1
 
 log-message 0 "Started dotdeb mirror rsync job."
+
+# Sync the gpg key
+wget -c ${remotegpgkey} --directory-prefix=${target}
+
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
     --hard-links --links --safe-links --times --numeric-ids \
     --delete-after --delay-updates --temp-dir="${tmppath}" \
-    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
+    --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 --exclude=dotdeb.gpg\
     "${source}" \
     "${target}"
 rsyncexitcode="$?"

@@ -58,7 +58,7 @@ fi
 # start to rsync the mirror (stage 1)
 log-message 0 "Started stage 1 of ubuntu mirror rsync job."
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
-    --hard-links --links --safe-links --times \
+    --hard-links --links --safe-links --times --perms \
     --delay-updates --temp-dir="${tmppath}" \
     --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
     --exclude "Packages*" --exclude "Sources*" \
@@ -76,7 +76,7 @@ fi
 # start to rsync the mirror (stage 2)
 log-message 0 "Started stage 2 of ubuntu mirror rsync job."
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
-    --hard-links --links --safe-links --times \
+    --hard-links --links --safe-links --times --perms \
     --delete-after --temp-dir="${tmppath}" \
     --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
     "${source}" \

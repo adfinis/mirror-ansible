@@ -54,7 +54,7 @@ flock -n 9 || log-message 1 "EPEL mirror rsync job is already running!" 1
 
 log-message 0 "Started epel mirror rsync job."
 rsync --verbose --log-file="${log}" --no-motd --human-readable --recursive \
-    --hard-links --links --safe-links --times --numeric-ids \
+    --hard-links --links --safe-links --times --numeric-ids --perms \
     --delete-after --delay-updates --temp-dir="${tmppath}" \
     --bwlimit="${bwlimit}" --timeout=120 --contimeout=60 \
     "${source}" \
