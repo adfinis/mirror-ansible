@@ -1,3 +1,9 @@
+
+## THIS REPOSITORY HAS BEEN ARCHIVED
+## THE CURRENT VERSION OF THIS ROLE IS HERE:
+## <https://github.com/adfinis-sygroup/ansible-role-repo_mirror>
+
+
 # Ansible Playbook - Package Mirror
 
 ## Information
